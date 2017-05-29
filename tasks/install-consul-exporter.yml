@@ -7,29 +7,23 @@
 #
 
 - block:
-    - name: set version tag prefix
-      set_fact:
-        prometheus_consul_exporter_version_tag_prefix: "{{ 'v' if prometheus_consul_exporter_version|version_compare('0.3', '>=') else '' }}"
     - name: set internal variables for convenience
       set_fact:
-        prometheus_consul_exporter_tarball_url: "https://github.com/prometheus/consul_exporter/releases/download/{{ prometheus_consul_exporter_version_tag_prefix }}{{ prometheus_consul_exporter_version }}/consul_exporter-{{ prometheus_consul_exporter_version }}.linux-amd64.tar.gz"
-      when: ansible_userspace_bits == "64"
-
-    - name: set internal variables for convenience
-      set_fact:
-        prometheus_consul_exporter_tarball_url: "https://github.com/prometheus/consul_exporter/releases/download/{{ prometheus_consul_exporter_version_tag_prefix }}{{ prometheus_consul_exporter_version }}/consul_exporter-{{ prometheus_consul_exporter_version }}.linux-386.tar.gz"
-      when: ansible_userspace_bits == "32"
+        prometheus_consul_exporter_archive_name: "consul_exporter-{{ prometheus_consul_exporter_version }}.{{ prometheus_consul_exporter_platform }}-{{ prometheus_consul_exporter_arch }}"
+        prometheus_consul_exporter_tarball_url: "https://github.com/prometheus/consul_exporter/releases/download/{{ 'v' if prometheus_consul_exporter_version|version_compare('0.3', '>=') else '' }}{{ prometheus_consul_exporter_version }}/{{ prometheus_consul_exporter_archive_name }}.tar.gz"
 
     - name: download and untar consul_exporter tarball
       unarchive:
         src: "{{ prometheus_consul_exporter_tarball_url }}"
         dest: "{{ prometheus_install_path }}"
         copy: no
+
+    - name: move to correct install path
+      command: "mv {{ prometheus_install_path }}/{{ prometheus_consul_exporter_archive_name }}/consul_exporter {{ prometheus_install_path }}/consul_exporter"
+      when: prometheus_consul_exporter_version|version_compare('0.3', '>=')
   when: prometheus_consul_exporter_version != "git"
 
-
 - block:
-
     - name: set internal variables for convenience
       set_fact:
         prometheus_consul_exporter_git_url: "https://github.com/prometheus/consul_exporter.git"

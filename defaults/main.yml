@@ -18,6 +18,9 @@ prometheus_consul_exporter_version: 0.3.0
 
 gosu_version: 1.10
 prometheus_go_version:   1.6.2
+prometheus_consul_exporter_platform: linux
+prometheus_consul_exporter_arch: '{{ "amd64" if ansible_userspace_bits == "64" else "386" }}'
+hashi_ui_arch: amd64
 
 
 prometheus_install_path:  /opt/prometheus
