@@ -7,9 +7,12 @@
 #
 
 - block:
-    - name: set internal variables for convenience
+    - name: set internal variables for convenience (part 1)
       set_fact:
         prometheus_consul_exporter_archive_name: "consul_exporter-{{ prometheus_consul_exporter_version }}.{{ prometheus_consul_exporter_platform }}-{{ prometheus_consul_exporter_arch }}"
+        
+    - name: set internal variables for convenience (part 2)
+      set_fact:
         prometheus_consul_exporter_tarball_url: "https://github.com/prometheus/consul_exporter/releases/download/{{ 'v' if prometheus_consul_exporter_version|version_compare('0.3', '>=') else '' }}{{ prometheus_consul_exporter_version }}/{{ prometheus_consul_exporter_archive_name }}.tar.gz"
 
     - name: download and untar consul_exporter tarball
